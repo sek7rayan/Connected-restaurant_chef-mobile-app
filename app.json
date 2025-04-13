@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "chef",
-    "slug": "chef",
+    "name": "serveur_app",
+    "slug": "serveur_app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
