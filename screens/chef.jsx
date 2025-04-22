@@ -7,48 +7,91 @@ import {
   ScrollView,
   Image,
   Modal,
-  Dimensions
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native';
+import updateCommandeState from '../api_commande';
 
-const initialOrders = [
-  { id: '1', table: '1', status: 'pending', time: '31 minutes ago' },
-  { id: '2', table: '2', status: 'pending', time: '31 minutes ago' },
-  { id: '3', table: '3', status: 'pending', time: '31 minutes ago' },
-  { id: '1234', table: '12', status: 'pending', time: '31 minutes ago' },
-  { id: '1234', table: '12', status: 'pending', time: '31 minutes ago' },
-  { id: '1234', table: '12', status: 'pending', time: '31 minutes ago' },
-  { id: '1234', table: '12', status: 'pending', time: '31 minutes ago' },
-];
-
-const initialFinishedOrders = [
-  { id: '1234', table: '12', status: 'finished', time: '31 minutes ago' },
-  { id: '1234', table: '12', status: 'finished', time: '31 minutes ago' },
-  { id: '1234', table: '12', status: 'finished', time: '31 minutes ago' },
-];
-
-const ChefScreen = () => {
-  const [orders, setOrders] = useState(initialOrders);
-  const [finishedOrders, setFinishedOrders] = useState(initialFinishedOrders);
+const ChefScreen = ({ notifications, loading, error }) => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const markOrderDone = () => {
+  // Séparer et trier les commandes
+  const pendingOrders = notifications.filter(order => 
+    order.status === 'en_attente' || order.status === 'en_cours_de_préparation'
+  );
+  const finishedOrders = notifications.filter(order => 
+    order.status === 'prête'
+  );
+  
+  const sortedPendingOrders = [...pendingOrders].sort((a, b) => {
+    // Priorité aux commandes en cours de préparation
+    if (a.status === 'en_cours_de_préparation' && b.status !== 'en_cours_de_préparation') return -1;
+    if (a.status !== 'en_cours_de_préparation' && b.status === 'en_cours_de_préparation') return 1;
+    // Tri par date pour les commandes de même statut
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  const sortedFinishedOrders = [...finishedOrders].sort((a, b) => 
+    new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
+  const markOrderDone = async () => {
     if (selectedOrder) {
-      setFinishedOrders([...finishedOrders, { ...selectedOrder, status: 'finished' }]);
-      setOrders(orders.filter((o) => o !== selectedOrder));
-      setModalVisible(false);
+      try {
+        await updateCommandeState(selectedOrder.id_commande, 'prête');
+        setModalVisible(false);
+      } catch (err) {
+        console.error("Erreur lors de la mise à jour:", err);
+      }
     }
   };
 
+  const markOrderPreparing = async () => {
+    if (selectedOrder) {
+      try {
+        await updateCommandeState(selectedOrder.id_commande, 'en_cours_de_préparation');
+        setModalVisible(false);
+      } catch (err) {
+        console.error("Erreur lors de la mise à jour:", err);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#a91c1c" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: 'red' }}>{error}</Text>
+      </View>
+    );
+  }
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => setRefreshing(false)}
+        />
+      }
+    >
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Image source={require('../assets/chef.png')} style={styles.iconLarge} />
           <Text style={styles.title}>Chef Dashboard</Text>
         </View>
         <View style={styles.headerRight}>
-          <Text style={styles.activeOrders}>Active orders: {orders.length}</Text>
+          <Text style={styles.activeOrders}>Active orders: {pendingOrders.length}</Text>
           <TouchableOpacity>
             <Image source={require('../assets/personne.png')} style={styles.iconSmall} />
           </TouchableOpacity>
@@ -64,7 +107,7 @@ const ChefScreen = () => {
         <Text style={styles.sectionTitle}>Pending orders</Text>
       </View>
       <View style={styles.cardsContainer}>
-        {orders.map((order, idx) => (
+        {sortedPendingOrders.map((order, idx) => (
           <OrderCard
             key={idx}
             order={order}
@@ -82,7 +125,7 @@ const ChefScreen = () => {
         <Text style={styles.sectionTitle}>Finished orders</Text>
       </View>
       <View style={styles.cardsContainer}>
-        {finishedOrders.map((order, idx) => (
+        {sortedFinishedOrders.map((order, idx) => (
           <OrderCard key={idx} order={order} />
         ))}
       </View>
@@ -92,32 +135,43 @@ const ChefScreen = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Order Details - Table #{selectedOrder?.table}</Text>
+              <Text style={styles.modalTitle}>Order Details - Table #{selectedOrder?.id_table}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Text style={styles.modalClose}>✕</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.modalDetails}>
-              <Text style={styles.grayText}>Order #{selectedOrder?.id}</Text>
-              <Text style={styles.grayText}>Client client-{selectedOrder?.id}</Text>
-              <Text style={[styles.grayText, { marginTop: 10, alignSelf: 'flex-end' }]}>Ordered at 08:02 PM</Text>
-              <Text style={[styles.grayText, { alignSelf: 'flex-end' }]}>Status: <Text style={{ color: 'red' }}>In progress</Text></Text>
+              <Text style={styles.grayText}>Order #{selectedOrder?.id_commande}</Text>
+              <Text style={styles.grayText}>Client client-{selectedOrder?.id_commande}</Text>
+              <Text style={[styles.grayText, { marginTop: 10, alignSelf: 'flex-end' }]}>
+                Ordered at {selectedOrder?.createdAt?.toLocaleTimeString()}
+              </Text>
+              <Text style={[styles.grayText, { alignSelf: 'flex-end' }]}>
+                Status: <Text style={{ 
+                  color: selectedOrder?.status === 'en_cours_de_préparation' ? 'orange' : 
+                        selectedOrder?.status === 'prête' ? 'green' : 'red'
+                }}>
+                  {selectedOrder?.status === 'en_attente' ? 'Waiting' : 
+                   selectedOrder?.status === 'en_cours_de_préparation' ? 'Preparing' : 
+                   'Ready'}
+                </Text>
+              </Text>
             </View>
             <View style={styles.tableHeader}>
               <Text style={styles.headerCol}>Orders</Text>
               <Text style={styles.headerCol}>Quantity</Text>
             </View>
-            {["Grilled Salmon", "Pasta", "Salad"].map((item, index) => (
+            {selectedOrder?.plats?.map((plat, index) => (
               <View key={index} style={styles.tableRow}>
-                <Text style={styles.rowCol}>{item}</Text>
-                <Text style={styles.rowCol}>2</Text>
+                <Text style={styles.rowCol}>{plat.nom_plat}</Text>
+                <Text style={styles.rowCol}>{plat.quantite}</Text>
               </View>
             ))}
             <View style={styles.modalButtons}>
               <TouchableOpacity style={styles.doneBtn} onPress={markOrderDone}>
-                <Text style={styles.btnText}>Mark Done</Text>
+                <Text style={styles.btnText}>Mark Ready</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.preparingBtn}>
+              <TouchableOpacity style={styles.preparingBtn} onPress={markOrderPreparing}>
                 <Text style={styles.btnText}>Mark Preparing</Text>
               </TouchableOpacity>
             </View>
@@ -129,22 +183,33 @@ const ChefScreen = () => {
 };
 
 function OrderCard({ order, onViewDetails }) {
-  const isPending = order.status === 'pending';
-  const bgColor = isPending ? '#a91c1c' : '#1c7c1c';
+  const getStatusColor = () => {
+    switch(order.status) {
+      case 'en_attente': return '#a91c1c'; // Rouge
+      case 'en_cours_de_préparation': return '#f4a742'; // Orange
+      case 'prête': return '#1c7c1c'; // Vert
+      default: return '#a91c1c';
+    }
+  };
+
+  const bgColor = getStatusColor();
+  const isPending = order.status !== 'prête';
 
   return (
     <View style={[styles.card, { borderTopColor: bgColor }]}>
       <View style={[styles.cardHeader, { backgroundColor: bgColor }]}>
-        <Text style={styles.tableText}>Table #{order.table}</Text>
+        <Text style={styles.tableText}>Table #{order.id_table}</Text>
         <View style={styles.orderIdBadge}>
-          <Text style={styles.orderIdText}>Order #{order.id}</Text>
+          <Text style={styles.orderIdText}>Order #{order.id_commande}</Text>
         </View>
-        <Text style={styles.timeText}>{order.time}</Text>
+        <Text style={styles.timeText}>{order.time || 'N/A'}</Text>
       </View>
       <View style={styles.cardBody}>
-      <Image source={require('../assets/client.png')} style={styles.iconSmall} />
+        <Image source={require('../assets/client.png')} style={styles.iconSmall} />
         <Text> Client order</Text>
-        <Text style={{ color: '#999', fontSize: 12 }}>4 items</Text>
+        <Text style={{ color: '#999', fontSize: 12 }}>
+          {order.plats?.length || 0} items
+        </Text>
         {isPending && (
           <TouchableOpacity style={styles.detailsButton} onPress={onViewDetails}>
             <Image source={require('../assets/details.png')} style={styles.detailsIcon} />
@@ -156,6 +221,7 @@ function OrderCard({ order, onViewDetails }) {
   );
 }
 
+// Les styles restent exactement les mêmes que dans votre fichier original
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -195,7 +261,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   activeOrders: {
-    marginLeft:7,
+    marginLeft: 7,
     marginRight: 10,
     fontWeight: 'bold',
   },
