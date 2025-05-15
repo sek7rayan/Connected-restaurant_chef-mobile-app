@@ -10,6 +10,8 @@ import {
   setLogLevel
 } from 'firebase/firestore';
 import ChefScreen from '../screens/chef';
+import { requestUserPermission } from './fcmservice'; // 👉 Crée ce fichier si pas encore
+import { setupFCMForegroundHandler } from './fcmhandler';
 
 setLogLevel('debug');
 
@@ -95,6 +97,23 @@ useEffect(() => {
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} heures`;
     return `${Math.floor(diffInSeconds / 86400)} jours`;
   };
+
+  useEffect(() => {
+    if (!isAuthReady) return;
+  
+    const initFCM = async () => {
+      console.log("🔧 [Init] Initialisation FCM...");
+      try {
+        await requestUserPermission();               // 🔐 Permission + token
+        await setupFCMForegroundHandler();           // 🔔 Affichage via Notifee
+        console.log("✅ Notifs FCM initialisées");
+      } catch (error) {
+        console.error("❌ Erreur initialisation FCM :", error);
+      }
+    };
+  
+    initFCM();
+  }, [isAuthReady]);
 
   return (
     <ChefScreen
