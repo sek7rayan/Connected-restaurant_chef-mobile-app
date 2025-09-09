@@ -47,12 +47,6 @@ Follow these steps to install and run the application:
 
 ---
 
-## License
-
-This project is licensed under the terms specified in the repository.
-
----
-
 ## Contact
 
 For any questions or contributions, please open an issue or submit a pull request.
