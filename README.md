@@ -1,50 +1,58 @@
-# Welcome to your Expo app 👋
+# Connected Restaurant Chef Mobile App (Manager Interface)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This repository contains the mobile application for restaurant managers, designed to streamline and centralize essential restaurant operations. The app provides an intuitive interface for managers to control and monitor various aspects of the restaurant, ensuring efficient coordination between staff, chefs, waiters, and clients.
 
-## Get started
+---
 
-1. Install dependencies
+## Features
 
-   ```bash
-   npm install
-   ```
+The Manager app allows you to:
+- **Manage Staff**: Add new staff members (waiters, chefs) and update their details.
+- **Manage Reservations**: View, add, or update table reservations to optimize seating and service.
+- **Manage the Menu**: Add new dishes, update prices, modify ingredients, and manage special offers and promotions.
+- **Manage Stock**: Monitor stock levels and receive notifications in case of shortages to prevent running out of essential items.
 
-2. Start the app
+With these features, the manager can efficiently oversee restaurant operations, ensuring that staff, reservations, menu, and inventory are always up to date. The app sends real-time notifications to alert the manager in case of stock shortages, allowing for quick decision-making and supply management.
 
-   ```bash
+---
+
+## Installation
+
+This app is built with [Expo](https://expo.dev/) for seamless development and deployment.  
+Follow these steps to install and run the application:
+
+1. **Clone the repository**:
+    ```bash
+    git clone https://github.com/sek7rayan/Connected-restaurant_chef-mobile-app.git
+    cd Connected-restaurant_chef-mobile-app
+    ```
+
+2. **Install dependencies**:
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
+
+3. **Start the Expo development server**:
+    ```bash
     npx expo start
-   ```
+    # or
+    yarn expo start
+    ```
 
-In the output, you'll find options to open the app in a
+4. **Run the App**:
+    - Scan the QR code in the Expo DevTools with your mobile device (using the [Expo Go app](https://expo.dev/client)).
+    - Or run on an emulator using the options in Expo DevTools.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## License
 
-## Get a fresh project
+This project is licensed under the terms specified in the repository.
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
-```
+## Contact
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+For any questions or contributions, please open an issue or submit a pull request.
