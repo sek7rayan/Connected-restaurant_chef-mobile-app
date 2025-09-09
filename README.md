@@ -1,52 +1,38 @@
-# Connected Restaurant Chef Mobile App (Manager Interface)
+# Connected Restaurant Chef Mobile App
 
-This repository contains the mobile application for restaurant managers, designed to streamline and centralize essential restaurant operations. The app provides an intuitive interface for managers to control and monitor various aspects of the restaurant, ensuring efficient coordination between staff, chefs, waiters, and clients.
+## Project Overview
 
----
+This project is a mobile application designed specifically for restaurant chefs to streamline the order management process in a connected restaurant environment.
 
 ## Features
 
-The Manager app allows you to:
-- **Manage Staff**: Add new staff members (waiters, chefs) and update their details.
-- **Manage Reservations**: View, add, or update table reservations to optimize seating and service.
-- **Manage the Menu**: Add new dishes, update prices, modify ingredients, and manage special offers and promotions.
-- **Manage Stock**: Monitor stock levels and receive notifications in case of shortages to prevent running out of essential items.
+- **Tablet Interface for Chefs**:  
+  The chef uses a tablet device in the kitchen, which serves as their main interface for daily operations.
 
-With these features, the manager can efficiently oversee restaurant operations, ensuring that staff, reservations, menu, and inventory are always up to date. The app sends real-time notifications to alert the manager in case of stock shortages, allowing for quick decision-making and supply management.
+- **Real-Time Order Reception**:  
+  As customers place their orders through the restaurant’s system, the orders are instantly sent to the chef’s tablet. Each new order appears in real-time, ensuring the chef is always up to date with the latest requests.
 
----
+- **Order Consultation**:  
+  The chef can easily view all active orders on the tablet. Each order includes all necessary details such as table number, ordered items, special instructions, and time of order.
 
-## Installation
+- **Order Status Management**:  
+  The chef has the ability to update the progress status of each order directly from the tablet. Typical statuses might include:  
+    - Received  
+    - In Preparation  
+    - Ready to Serve  
+   
 
-This app is built with [Expo](https://expo.dev/) for seamless development and deployment.  
-Follow these steps to install and run the application:
+  This feature helps the entire restaurant staff (including waiters and managers) track the real-time status of every order, improving communication and efficiency.
 
-1. **Clone the repository**:
-    ```bash
-    git clone https://github.com/sek7rayan/Connected-restaurant_chef-mobile-app.git
-    cd Connected-restaurant_chef-mobile-app
-    ```
+## Purpose
 
-2. **Install dependencies**:
-    ```bash
-    npm install
-    # or
-    yarn install
-    ```
+The main goal of this app is to enhance communication between the kitchen and the rest of the restaurant staff, reduce errors, and speed up the service by providing an intuitive and interactive digital solution for order management.
 
-3. **Start the Expo development server**:
-    ```bash
-    npx expo start
-    # or
-    yarn expo start
-    ```
+## Technologies
 
-4. **Run the App**:
-    - Scan the QR code in the Expo DevTools with your mobile device (using the [Expo Go app](https://expo.dev/client)).
-    - Or run on an emulator using the options in Expo DevTools.
+- Mobile app (tablet-oriented UI)
+- Real-time data synchronization with the restaurant’s order system
 
 ---
 
-## Contact
-
-For any questions or contributions, please open an issue or submit a pull request.
+This application is a core component of a connected restaurant ecosystem, ensuring that chefs can efficiently manage and track orders, leading to a better dining experience for customers.
