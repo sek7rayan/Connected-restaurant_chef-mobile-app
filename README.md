@@ -1,4 +1,4 @@
-# Connected Restaurant Chef Mobile App
+# Connected Restaurant Chef's App
 
 ## Project Overview
 
